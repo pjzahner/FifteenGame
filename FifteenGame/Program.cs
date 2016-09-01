@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 namespace FifteenGame
 {
 	
-
 	class Program
 	{
 		static void Main(string[] args)
 		{
 			List<char> GameBoardString = AssembleBoard(10, 3);
 			Console.WriteLine(GameBoardString.ToArray());
+			BoxCharacters.TopLeftCorner = 'f';
 		}
 		//system.text.encoding
+		//penis
 		//byteswriter
 		public static void DrawBoard()
 		{
@@ -59,67 +60,21 @@ namespace FifteenGame
 			return GameBoardString;		
 		}
 
-		public static char[] MakeBoxStrings(int NumBoxes, int BoxSize, LineType Type)
+		//Thoughts on solving problem of passing in character sets
+			//Use one static class with multiple CharSet strucs
+			//Classes with properties and interfaces
+		public static char[] MakeBoxStrings(int NumBoxes, int BoxSize, CharSet LineCharacters)
 		{
-			//Unicode decimal values for double-lined box characters to make code more readable
-			const char TopLeftCorner = (char)9556;
-			const char TopRightCorner = (char)9559;
-			const char BottomLeftCorner = (char)9562;
-			const char BottomRightCorner = (char)9565;
-			const char TopTee = '\u2566';
-			const char BottomTee = '\u2569';
-			const char LeftTee = '\u2560';
-			const char RightTee = '\u2563';
-			const char Riser = (char)9553;
-			const char Spanner = (char)9552;
-			const char Cross = '\u256c';
-
+			//Character variables to assign to this specific line
+			char LeftChar = LineCharacters.LeftChar;
+			char SpanningChar;
+			char MiddleChar;
+			char RightChar;
 			//Int values to define width of one box (in characters) and width of one line (in characters)
 			int BoxWidth = BoxSize + 1;
 			int LineLength = (BoxWidth * NumBoxes) + 1;
 
-			//Character variables to assign to this specific line
-			char LeftChar;
-			char SpanningChar;
-			char MiddleChar;
-			char RightChar;
-
-			//Switch to determine which characters to use based on which type of line we are making.
-			switch(Type)
-			{
-				case LineType.TopLine:
-					LeftChar = TopLeftCorner;
-					SpanningChar = Spanner;
-					MiddleChar = TopTee;
-					RightChar = TopRightCorner;
-					break;
-				case LineType.MiddleLine:
-					LeftChar = LeftTee;
-					SpanningChar = Spanner;
-					MiddleChar = Cross;
-					RightChar = RightTee;
-					break;
-				case LineType.FillerLine:
-					LeftChar = Riser;
-					SpanningChar = ' ';
-					MiddleChar = Riser;
-					RightChar = Riser;
-					break;
-				case LineType.BottomLine:
-					LeftChar = BottomLeftCorner;
-					SpanningChar = Spanner;
-					MiddleChar = BottomTee;
-					RightChar = BottomRightCorner;
-					break;
-				default:
-					LeftChar = 'x';
-					SpanningChar = 'x';
-					MiddleChar = 'x';
-					RightChar = 'x';
-					break;
-			}
-				
-					
+			
 			//initialize char arrays based on board dimensions and box size
 			//Initialize top line
 			char[] Line = new char[LineLength + 2];
@@ -142,5 +97,70 @@ namespace FifteenGame
 			Console.WriteLine(Line);
 			return Line;
 		}
+	}
+
+	//Class which contains the unicode values of every desired box-drawing character
+	// '\u' is the escape sequence which specifies the numbers as a unicode character (in hexadecimal)
+	public static class BoxCharacters
+	{
+		public const char TopLeftCorner = (char)9556;
+		public const char TopRightCorner = (char)9559;
+		public const char BottomLeftCorner = (char)9562;
+		public const char BottomRightCorner = (char)9565;
+		public const char TopTee = '\u2566';
+		public const char BottomTee = '\u2569';
+		public const char LeftTee = '\u2560';
+		public const char RightTee = '\u2563';
+		public const char Riser = (char)9553;
+		public const char Spanner = (char)9552;
+		public const char Cross = '\u256c';
+	}
+	//Character set section
+	//Abstract class for all character sets to use
+	public abstract class CharSet
+	{
+		public static readonly char LeftChar;
+		public static readonly char SpanningChar;
+		public static readonly char MiddleChar;
+		public static readonly char RightChar;
+	}
+	//Derivatives of CharSet, used by methods which build strings for drawing boxes for fiteen game
+	//Constrctor is private to prevent instantiation of these classes
+	//All four variables should be marked 'readonly' to prevent modification
+	public class TopLine : CharSet
+	{
+		public static readonly char
+			LeftChar = BoxCharacters.TopRightCorner,
+			SpanningChar = BoxCharacters.Spanner,
+			MiddleChar = BoxCharacters.TopTee,
+			RightChar = BoxCharacters.TopRightCorner;
+		private TopLine() { }
+	}
+	public class FillerLine : CharSet
+	{
+		public static readonly char
+			LeftChar = BoxCharacters.Riser,
+			SpanningChar = ' ',
+			MiddleChar = BoxCharacters.Riser,
+			RightChar = BoxCharacters.Riser;
+		private FillerLine() { }
+	}
+	public class MiddleLine : CharSet
+	{
+		public static readonly char
+			LeftChar = BoxCharacters.LeftTee,
+			SpanningChar = BoxCharacters.Spanner,
+			MiddleChar = BoxCharacters.Cross,
+			RightChar = BoxCharacters.RightTee;
+		private MiddleLine() { }
+	}
+	public class BottomLine : CharSet
+	{
+		public static readonly char
+			LeftChar = BoxCharacters.BottomLeftCorner,
+			SpanningChar = BoxCharacters.Spanner,
+			MiddleChar = BoxCharacters.BottomTee,
+			RightChar = BoxCharacters.BottomRightCorner;
+		private BottomLine() { }
 	}
 }
