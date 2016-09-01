@@ -10,21 +10,32 @@ namespace Practice
 	{
 		static void Main(string[] args)
 		{
-			WriteInput(ChildClass);
+			WriteInput(TestClass);
 		}
-		static void WriteInput(PracticeClass)
+
+		static void WriteInput(ITestInterface Input)
 		{
-			Console.WriteLine(InClass.TestChar);
+			Console.WriteLine(Input.Character);
 		}
 	}
 
-	public abstract class PracticeClass
+	//Declaring interface
+	public interface ITestInterface
 	{
-		public readonly char TestChar;
+		char Character {get;}
 	}
-	public class ChildClass
+
+	//Noww the class which works with the interface
+	public class TestClass : ITestInterface
 	{
-		public readonly char TestChar = 'z';
-		private ChildClass() { }
+		private static char CharacterValue = 'z';
+		public char Character
+		{
+			get
+			{
+				return CharacterValue;
+			}
+		}
 	}
+	
 }
