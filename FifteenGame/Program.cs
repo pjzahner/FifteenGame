@@ -121,20 +121,26 @@ namespace FifteenGame
 		private static int[,] NumLocBuilder(int NumBoxes, int BoxSize)
 		{
 			//initialize 2D array for number locations
+			//arranged as [Column, Row]
 			int[,] NumLoc = new int[NumBoxes, NumBoxes];
-			
 			//number of chars in each line
-			int CharsInLine = (((BoxSize * 2) + 1) * NumBoxes + 3);
+			int CharsPerLine = (((BoxSize * 2) + 1) * NumBoxes + 3);
+
+			//EdgeOffset essentially gets you to the space for the number in the top left corner of the board.
+			//After edge offset, it's simply a matter of adding on the number of rows and columns times the right number of chars
+			int EdgeOffset = (((BoxSize + 1) / 2) * CharsPerLine) + BoxSize;
+
+			//CharsPerRow
+			int CharsPerRow = (BoxSize + 1) * CharsPerLine;
+			//CharsPerColumn
+			int CharsPerColumn = (BoxSize * 2) + 1;
 
 			for (int Row = 0; Row < NumBoxes; Row++)
 			{
-				//Number of chars to offset for every row you go down
-				int RowCharOffset = ((((BoxSize + 1)/ 2)) + ((BoxSize + 1) * Row)) * CharsInLine;
 
 				for (int Column = 0; Column < NumBoxes; Column++)
 				{
-					int ColumnCharOffset = ((BoxSize) + (((BoxSize * 2) + 1) * Column));
-					NumLoc[Column, Row] = RowCharOffset + ColumnCharOffset;
+					NumLoc[Column, Row] = (Column * CharsPerColumn) + (Row * CharsPerRow) + EdgeOffset;
 				}
 			}
 			return NumLoc;
